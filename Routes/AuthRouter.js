@@ -38,6 +38,7 @@ const {
   saveSeller,
   saveProduct,
   loadSpecificSellerProduct,
+  loadAllProductsUser,
 } = require("../Controllers/AuthController");
 
 router.post("/login", loginValidation, login);
@@ -70,6 +71,8 @@ router.get("/save-seller/:sellerId", authenticateUser, saveSeller);
 router.get("/save-product/:sellerId/:productId", authenticateUser, saveProduct);
 router.put("/api/edit-seller-info/:sellerId", editSellerInfo);
 router.get("/load-specific-seller-product/:sellerId",authenticateUser,loadSpecificSellerProduct)
+
+router.get('/load-all-products-user',authenticateUser,loadAllProductsUser)
 
 router.delete("/api/remove-seller/:sellerId", removeSeller);
 

@@ -54,17 +54,17 @@ const signup = async (req, res) => {
     });
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      secure: true,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: process.env.SMTP_PORT == 465,
       auth: {
-        user: process.env.MY_GMAIL,
+        user: process.env.MY_EMAIL,
         pass: process.env.MY_PASSWORD,
       },
     });
 
     const receiver = {
-      from: "usmanmwallara@gmail.com",
-      to: email,
+      from: process.env.MY_EMAIL, 
       subject: "Email Verification",
       text: `Click on this link to verify your password ${process.env.LOCALHOST_RESET_URL}/verify-email/${token}`,
     };
@@ -296,49 +296,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Reset password functionality
-// const forgotPassword = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     if (!email) {
-//       return res.status(400).send({ message: "Please provide email" });
-//     }
-
-//     const checkUser = await UserModel.findOne({ email });
-//     if (!checkUser) {
-//       return res.status(400).send({ message: "User not found, please register" });
-//     }
-
-//     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-//     const transporter = nodemailer.createTransport({
-//       host: process.env.SMTP_HOST, // Use webmail SMTP host
-//       port: process.env.SMTP_PORT, // Use the webmail port (e.g., 465)
-//       secure: process.env.SMTP_PORT == 465, // Use SSL for port 465
-//       auth: {
-//         user: process.env.MY_EMAIL,
-//         pass: process.env.MY_PASSWORD,
-//       },
-//     });
-
-//     const receiver = {
-//       from: process.env.MY_EMAIL, // Sender's webmail address
-//       to: email,
-//       subject: "Password Reset Request",
-//       text: `Click on this link to reset your password: ${process.env.URL_ResetPass}/reset-password/${token}`,
-//     };
-
-//     await transporter.sendMail(receiver);
-
-//     return res.status(200).send({
-//       message: "Password reset link sent successfully to your email account",
-//     });
-//   } catch (err) {
-//     console.error("Error:", err);
-//     return res.status(500).send({ message: "Something went wrong" });
-//   }
-// };
-
 const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -485,6 +442,23 @@ const loadUserAllSellers = async (req, res) => {
     });
   } catch {
     return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const loadAllProductsUser = async (req, res) => {
+  try {
+    const products = await productModel.find({
+      userId: req.user._id,
+    });
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch {
+    return res.status(200).json({
       success: false,
       message: error.message,
     });
@@ -1402,4 +1376,5 @@ module.exports = {
   saveSeller,
   saveProduct,
   loadSpecificSellerProduct,
+  loadAllProductsUser
 };
