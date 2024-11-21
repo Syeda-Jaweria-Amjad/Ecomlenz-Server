@@ -40,6 +40,7 @@ const {
   loadSpecificSellerProduct,
   loadAllProductsUser,
   loadUserSavedSellers,
+  markAsReadNewProducts,
 } = require("../Controllers/AuthController");
 
 router.post("/login", loginValidation, login);
@@ -60,9 +61,9 @@ router.post("/forget-password", forgotPassword);
 //password reset
 router.post("/reset-password/:token", resetPassword);
 
-router.post("/change-password", changePassword);
+router.post("/change-password", authenticateUser, changePassword);
 
-router.put("/user/:userId", updateUser);
+router.put("/edit-user", authenticateUser, updateUser);
 
 router.get("/api/product/:asin", keepaProductfetch);
 
@@ -90,7 +91,11 @@ router.post(
   authenticateUser,
   saveUserProductId
 );
-
+router.get(
+  "/mark-as-read-new-products/:sellerId",
+  authenticateUser,
+  markAsReadNewProducts
+);
 router.get("/api/getUserProductIds", authenticateUser, getUserProductIds);
 
 router.get("/api/PauseSellerids/:sellerId", authenticateUser, pauseSellerids);

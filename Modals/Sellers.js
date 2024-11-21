@@ -26,6 +26,10 @@ const sellerSchema = new mongoose.Schema({
       default: Date.now,
     },
   },
+  newProductCount: {
+    type: Number,
+    default: 0,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",

@@ -336,15 +336,15 @@ const resetPassword = async (req, res) => {
 // Change password functionality
 const changePassword = async (req, res) => {
   try {
-    const { email, currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword } = req.body;
 
-    if (!email || !currentPassword || !newPassword) {
+    if (!currentPassword || !newPassword) {
       return res
         .status(400)
         .send({ message: "Please provide all required fields" });
     }
 
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ _id: req.user._id });
     if (!user) {
       return res
         .status(400)
@@ -374,11 +374,10 @@ const changePassword = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName } = req.body;
 
     // Check if the user exists
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findOne({ _id: req.user?._id });
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -389,7 +388,6 @@ const updateUser = async (req, res) => {
     // Update fields if they are provided
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    if (email) user.email = email;
 
     // Save the updated user data
     await user.save();
@@ -617,7 +615,35 @@ const sellerInfo = async (req, res) => {
     res.status(500).json({ message: "Error fetching Keepa data." });
   }
 };
-
+const markAsReadNewProducts = async (req, res) => {
+  try {
+    const sellerId = req.params.sellerId;
+    if (!sellerId) {
+      return res.status(400).json({
+        success: false,
+        message: "Seller ID is required",
+      });
+    }
+    const seller = await SellerData.findOne({ sellerId, userId: req.user._id });
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller not found",
+      });
+    }
+    seller.newProductCount = 0;
+    await seller.save();
+    return res.status(200).json({
+      success: true,
+      message: "New product marked as read successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 const updateSellerInfo = async (sellerId, userId) => {
   try {
     const req = { params: { sellerId }, user: { _id: userId } };
@@ -844,6 +870,9 @@ const updateSellerInfo = async (sellerId, userId) => {
             } else {
               console.log("this is the new console ");
               await new productModel(product).save();
+              existingSeller.newProductCount =
+                existingProduct.newProductCount + 1;
+              await existingSeller.save();
               console.log(`Added new product with ASIN: ${product.asin}`);
             }
           } catch (error) {
@@ -1396,4 +1425,5 @@ module.exports = {
   saveProduct,
   loadSpecificSellerProduct,
   loadAllProductsUser,
+  markAsReadNewProducts,
 };
