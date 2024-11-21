@@ -64,7 +64,7 @@ const signup = async (req, res) => {
     });
 
     const receiver = {
-      from: process.env.MY_EMAIL, 
+      from: process.env.MY_EMAIL,
       subject: "Email Verification",
       text: `Click on this link to verify your password ${process.env.LOCALHOST_RESET_URL}/verify-email/${token}`,
     };
@@ -866,24 +866,24 @@ const updateSellerInfo = async (sellerId, userId) => {
 };
 
 // Cron job to update seller data every minute
-cron.schedule("*/5 * * * *", async () => {
-  console.log("Running scheduled seller data update...");
+// cron.schedule("*/5 * * * *", async () => {
+//   console.log("Running scheduled seller data update...");
 
-  try {
-    const sellers = await SellerData.find({});
-    const updatePromises = sellers.map((seller) =>
-      updateSellerInfo(seller.sellerId, seller.userId)
-    );
+//   try {
+//     const sellers = await SellerData.find({});
+//     const updatePromises = sellers.map((seller) =>
+//       updateSellerInfo(seller.sellerId, seller.userId)
+//     );
 
-    await Promise.all(updatePromises);
-    console.log("All seller data updates completed successfully.");
-  } catch (error) {
-    console.error(
-      "Error fetching sellers for scheduled update:",
-      error.message
-    );
-  }
-});
+//     await Promise.all(updatePromises);
+//     console.log("All seller data updates completed successfully.");
+//   } catch (error) {
+//     console.error(
+//       "Error fetching sellers for scheduled update:",
+//       error.message
+//     );
+//   }
+// });
 
 const loadSellerAllProducts = async (req, res) => {
   try {
@@ -946,43 +946,61 @@ const fetchGraphImage = async (req, res) => {
   }
 };
 
-const getUserSellers = async (req, res) => {
-  const userId = req.user._id;
+// const getUserSellers = async (req, res) => {
+//   const userId = req.user._id;
 
+//   try {
+//     const sellers = await SellerData.find({ userIds: userId });
+//     const sellerSaveData = await SellerSaveids.findOne({ userId });
+//     const favoriteSellerIds = sellerSaveData ? sellerSaveData.sids : [];
+
+//     const userProducts = await UserProductIds.findOne({ userId });
+//     const savedProductIds = userProducts ? userProducts.productIds : [];
+
+//     const sellersWithFavoriteTags = sellers.map((seller) => {
+//       const isFavorite = favoriteSellerIds.includes(seller.sellerId)
+//         ? "favourite"
+//         : "";
+
+//       const productsWithSavedStatus = seller.products.map((product) => ({
+//         ...product.toObject(),
+//         isSaved: savedProductIds.includes(product._id.toString())
+//           ? "saved"
+//           : "",
+//       }));
+
+//       return {
+//         ...seller.toObject(),
+//         favourite: isFavorite,
+//         products: productsWithSavedStatus,
+//       };
+//     });
+
+//     res.json(sellersWithFavoriteTags);
+//   } catch (error) {
+//     console.error("Error fetching user sellers:", error);
+//     res.status(500).json({ message: "Error fetching sellers." });
+//   }
+// };
+
+const loadUserSavedSellers = async (req, res) => {
   try {
-    const sellers = await SellerData.find({ userIds: userId });
-    const sellerSaveData = await SellerSaveids.findOne({ userId });
-    const favoriteSellerIds = sellerSaveData ? sellerSaveData.sids : [];
-
-    const userProducts = await UserProductIds.findOne({ userId });
-    const savedProductIds = userProducts ? userProducts.productIds : [];
-
-    const sellersWithFavoriteTags = sellers.map((seller) => {
-      const isFavorite = favoriteSellerIds.includes(seller.sellerId)
-        ? "favourite"
-        : "";
-
-      const productsWithSavedStatus = seller.products.map((product) => ({
-        ...product.toObject(),
-        isSaved: savedProductIds.includes(product._id.toString())
-          ? "saved"
-          : "",
-      }));
-
-      return {
-        ...seller.toObject(),
-        favourite: isFavorite,
-        products: productsWithSavedStatus,
-      };
+    const sellers = await SellerData.find({
+      userId: req.user._id,
+      isSaved: true,
     });
 
-    res.json(sellersWithFavoriteTags);
+    return res.status(200).json({
+      success: true,
+      sellers,
+    });
   } catch (error) {
-    console.error("Error fetching user sellers:", error);
-    res.status(500).json({ message: "Error fetching sellers." });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 const SearchBySellerApi = async (req, res) => {
   try {
     const { searchTerm } = req.query;
@@ -1360,7 +1378,8 @@ module.exports = {
   fetchAllSellers,
   productsBySellerID,
   allSellerData,
-  getUserSellers,
+  // getUserSellers,
+  loadUserSavedSellers,
   SearchBySellerApi,
   fetchGraphImage,
   editSellerInfo,
@@ -1376,5 +1395,5 @@ module.exports = {
   saveSeller,
   saveProduct,
   loadSpecificSellerProduct,
-  loadAllProductsUser
+  loadAllProductsUser,
 };

@@ -17,7 +17,7 @@ const {
   fetchAllSellers,
   allSellerData,
   productsBySellerID,
-  getUserSellers,
+  // getUserSellers,
   fetchGraphImage,
   SearchBySellerApi,
   SearchProductapi,
@@ -39,6 +39,7 @@ const {
   saveProduct,
   loadSpecificSellerProduct,
   loadAllProductsUser,
+  loadUserSavedSellers,
 } = require("../Controllers/AuthController");
 
 router.post("/login", loginValidation, login);
@@ -65,21 +66,25 @@ router.put("/user/:userId", updateUser);
 
 router.get("/api/product/:asin", keepaProductfetch);
 
-router.post("/api/seller/:sellerId", authenticateUser, sellerInfo);
+router.get("/api/seller/:sellerId", authenticateUser, sellerInfo);
 
 router.get("/save-seller/:sellerId", authenticateUser, saveSeller);
 router.get("/save-product/:sellerId/:productId", authenticateUser, saveProduct);
 router.put("/api/edit-seller-info/:sellerId", editSellerInfo);
-router.get("/load-specific-seller-product/:sellerId",authenticateUser,loadSpecificSellerProduct)
+router.get(
+  "/load-specific-seller-product/:sellerId",
+  authenticateUser,
+  loadSpecificSellerProduct
+);
 
-router.get('/load-all-products-user',authenticateUser,loadAllProductsUser)
+router.get("/load-all-products-user", authenticateUser, loadAllProductsUser);
 
 router.delete("/api/remove-seller/:sellerId", removeSeller);
 
 router.get("/api/search-seller", authenticateUser, SearchBySellerApi);
 
-router.get("/api/getUserSellers", authenticateUser, getUserSellers);
-
+// router.get("/api/getUserSellers", authenticateUser, getUserSellers);
+router.get("/load-user-saved-sellers", authenticateUser, loadUserSavedSellers);
 router.post(
   "/api/saveUserProductId/:productId",
   authenticateUser,
