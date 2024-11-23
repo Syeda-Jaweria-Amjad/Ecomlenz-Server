@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+ 
 const sellerSchema = new mongoose.Schema({
   sellerId: {
     type: String,
@@ -58,7 +58,7 @@ const sellerSchema = new mongoose.Schema({
   //     graphImageUrl:{type: String},
   //     totaloffercount:{type: Number},
   //     date:{type:String},
-
+ 
   //   },
   // ],
   // userIds: [
@@ -69,7 +69,9 @@ const sellerSchema = new mongoose.Schema({
   //   },
   // ],
 });
-
+ 
 const SellerData = mongoose.model("Seller", sellerSchema);
-
+ 
 module.exports = SellerData;
+ 
+ 

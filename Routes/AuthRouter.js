@@ -1,5 +1,5 @@
 const router = require("express").Router();
-
+ 
 const {
   signupValidation,
   loginValidation,
@@ -40,16 +40,21 @@ const {
   loadSpecificSellerProduct,
   loadAllProductsUser,
   loadUserSavedSellers,
+  paginatedProducts,
+  searchProducts,
+  searchSavedProducts,
+  sortSellers,
+  getsellersaveid,
   markAsReadNewProducts,
 } = require("../Controllers/AuthController");
-
+ 
 router.post("/login", loginValidation, login);
 router.post("/signup", signupValidation, signup);
 router.post("/confirm-email/:token", authenticateUser, confirmEmail);
 router.get("/logout", authenticateUser, logout);
 router.get("/load-current-user", authenticateUser, loadCurrentUser);
 router.get("/pause-seller/:sellerId", pauseSeller);
-
+ 
 router.get("/load-user-all-sellers", authenticateUser, loadUserAllSellers);
 router.get(
   "/load-user-all-products/:sellerId",
@@ -60,15 +65,15 @@ router.get(
 router.post("/forget-password", forgotPassword);
 //password reset
 router.post("/reset-password/:token", resetPassword);
-
-router.post("/change-password", authenticateUser, changePassword);
-
-router.put("/edit-user", authenticateUser, updateUser);
-
+ 
+router.post("/change-password", changePassword);
+ 
+router.put("/user/:userId", updateUser);
+ 
 router.get("/api/product/:asin", keepaProductfetch);
-
+ 
 router.get("/api/seller/:sellerId", authenticateUser, sellerInfo);
-
+ 
 router.get("/save-seller/:sellerId", authenticateUser, saveSeller);
 router.get("/save-product/:sellerId/:productId", authenticateUser, saveProduct);
 router.put("/api/edit-seller-info/:sellerId", editSellerInfo);
@@ -77,13 +82,21 @@ router.get(
   authenticateUser,
   loadSpecificSellerProduct
 );
-
+ 
 router.get("/load-all-products-user", authenticateUser, loadAllProductsUser);
-
-router.delete("/api/remove-seller/:sellerId", removeSeller);
-
-router.get("/api/search-seller", authenticateUser, SearchBySellerApi);
-
+ 
+router.delete("/remove-seller/:sellerId", authenticateUser, removeSeller);
+ 
+router.get("/search-seller", authenticateUser, SearchBySellerApi);
+ 
+router.get("/paginated-products", authenticateUser, paginatedProducts);
+ 
+router.get("/search-products", authenticateUser, searchProducts);
+ 
+router.get("/search-saved-products", authenticateUser, searchSavedProducts);
+ 
+router.get("/sort-sellers", authenticateUser, sortSellers);
+ 
 // router.get("/api/getUserSellers", authenticateUser, getUserSellers);
 router.get("/load-user-saved-sellers", authenticateUser, loadUserSavedSellers);
 router.post(
@@ -91,35 +104,37 @@ router.post(
   authenticateUser,
   saveUserProductId
 );
+ 
+router.get("/api/getUserProductIds", authenticateUser, getUserProductIds);
+ 
+router.get("/api/PauseSellerids/:sellerId", authenticateUser, pauseSellerids);
+ 
+router.post("/api/SaveSellerid/:sellerid", authenticateUser, sellersaveid);
 router.get(
   "/mark-as-read-new-products/:sellerId",
   authenticateUser,
   markAsReadNewProducts
 );
-router.get("/api/getUserProductIds", authenticateUser, getUserProductIds);
-
-router.get("/api/PauseSellerids/:sellerId", authenticateUser, pauseSellerids);
-
-router.post("/api/SaveSellerid/:sellerid", authenticateUser, sellersaveid);
-
 router.delete(
   "/api/deletesellersaveid/:sellerid",
   authenticateUser,
   deletesellersaveid
 );
-
+ 
 router.delete(
   "/api/deleteUserProductId/:productId",
   authenticateUser,
   deleteUserProductId
 );
-
+ 
 router.get("/api/productsBySellerID/:sellerId", productsBySellerID);
-
+ 
 router.get("/api/allSellerData", allSellerData);
-
+ 
 router.get("/api/sellers", fetchAllSellers);
-
+ 
 router.get("/api/images/:asin", fetchGraphImage);
-
+ 
 module.exports = router;
+ 
+ 
