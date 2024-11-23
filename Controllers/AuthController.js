@@ -612,7 +612,7 @@ const sellerInfo = async (req, res) => {
       "Error fetching seller or product data from Keepa:",
       error.response ? error.response.data : error.message
     );
-    res.status(500).json({ message: "Error fetching Keepa data." });
+    res.status(500).json({ message: error.message });
   }
 };
 const markAsReadNewProducts = async (req, res) => {
